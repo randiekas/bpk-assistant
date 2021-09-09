@@ -4,9 +4,9 @@
 		<v-col md="5">
 			<v-container style="height:80vh" class="d-flex">
 				<div class="mx-auto my-auto pa-16">
-				<h1 class="display-4">Virtual Asisten BPK Penabur</h1>
+				<h1 class="display-4">Virtual Assistant BPK Penabur</h1>
 				<p class="text-body-1">
-					Selamat datang di situs resmi belajar,  berbasis personal asisten artificial intellegence.
+					Selamat datang di situs resmi belajar,  berbasis personal assistant artificial intellegence.
 				</p>
 				</div>
 			</v-container>
@@ -269,7 +269,7 @@ export default {
 
 			this.handelKirimPesanDelay(1000, {
 				saya: false,
-				pesan: "Selamat datang di virtual asisten BPK Penabur",
+				pesan: "Selamat datang di virtual assistant BPK Penabur",
 				mode: 'teks',
 				opsi: [],
 			})
@@ -290,7 +290,7 @@ export default {
 			})
 			this.handelKirimPesanDelay(1000, {
 				saya: false,
-				pesan: "Selamat datang kembali di virtual asisten BPK Penabur",
+				pesan: "Selamat datang kembali di virtual assistant BPK Penabur",
 				mode: 'teks',
 				opsi: [],
 			})
@@ -309,7 +309,7 @@ export default {
 			})
 			this.handelKirimPesanDelay(1500, {
 				saya: false,
-				pesan: "Selamat datang kembali di virtual asisten BPK Penabur",
+				pesan: "Selamat datang kembali di virtual assistant BPK Penabur",
 				mode: 'teks',
 				opsi: [],
 			})

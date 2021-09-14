@@ -33,7 +33,7 @@
 		<v-btn
 			class="primary"
 			text
-			to="/beranda">
+			to="/intent/beranda">
 			Masuk
 		</v-btn>
 	</v-app-bar>

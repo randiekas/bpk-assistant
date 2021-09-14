@@ -346,7 +346,7 @@ export default {
 			}, delay)
 		},
 		handelResponBot: function(pesan){
-			if(this.step===1){
+			if(this.step==1){
 				this.userNama	= pesan
 				this.handelKirimPesanDelay(500, {
 					saya: false,
@@ -362,7 +362,7 @@ export default {
 					opsi: this.tingkat
 				})
 				this.step	= 2
-			}else if(this.step===2){
+			}else if(this.step==2){
 				this.userKelas	= pesan
 				this.handelKirimPesanDelay(1000, {
 					saya: false,

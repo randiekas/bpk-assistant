@@ -3,6 +3,8 @@
 	<v-navigation-drawer
 	fixed
 	app
+	mini-variant
+	expand-on-hover
 	>
 	<v-list>
 		<v-list-item

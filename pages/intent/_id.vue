@@ -1,9 +1,15 @@
 <template>
     <v-row dense class="h-full">
-        <v-col md="8" class="ma-0 pa-0 h-full">
+        <v-col md="9" class="ma-0 pa-0 h-full">
+			
+			<Chart 
+				:data="data"
+				:handelKlik="handelKlik"
+				/>
+			
             <v-app-bar>
                 <v-toolbar-title>
-                    Alur Beranda
+                    Chatbot builder
                 </v-toolbar-title>
                 <v-btn 
                     small
@@ -19,34 +25,87 @@
                     Simpan
                 </v-btn>
             </v-app-bar>
-            <v-subheader>
-                Greetings (Web only)
-            </v-subheader>
-            <v-container>
-                <v-text-field
-                    dense
-                    placeholder=""
-                    value="Selamat pagi"
-                    outlined
-                    hide-details=""
-                    class="mb-1"
-                    append-icon="mdi-delete"/>
-                <v-text-field
-                    dense
-                    placeholder=""
-                    value="Selamat datang di virtual assistant BPK Penabur"
-                    outlined
-                    hide-details=""
-                    append-icon="mdi-delete"
-                    class="mb-1"/>
-                <v-text-field
-                    dense
-                    placeholder="Tulish Greeting disini ..."
-                    outlined
-                    hide-details=""
-                    append-icon="mdi-plus"
-                    class="mb-1"/>
-            </v-container>
+            
+        </v-col>
+        
+        <v-col md="3" class="ma-0 pa-0 h-full">
+        <v-card 
+            class="card-chat d-flex flex-column justify-content-between">
+            <v-card-title>
+                Simulasi
+                <v-spacer/>
+                <v-btn
+                    class="primary"
+                    rounded
+					v-on:click="handelReset">
+                    Reset
+                </v-btn>
+            </v-card-title>
+            <v-divider/>
+		<v-card-text class="card-chat-percakapan flex-grow-1">
+			<v-list-item dense
+				v-for="(item, index) in percakapan"
+				:key="index"
+				:class="`mt-1 ${item.saya?'ml-8 justify-end':'mr-8'}`">
+				<v-card 
+					dark 
+					:color="item.saya?'primary':'grey darken-3'" 
+					class="pa-2">
+					<div v-html="item.pesan"></div>
+				</v-card>	
+			</v-list-item>
+			
+		</v-card-text>
+		
+		<div>
+			<v-text-field
+				v-if="percakapan.length===0 || percakapan[percakapan.length-1].mode==='teks'"
+				outlined
+				hide-details=""
+				placeholder="tulis pesan disini ..."
+				dense
+				append-icon="mdi-send"
+				v-model="pesan"
+				v-on:keyup.enter="handelKirimPesan"/>
+
+			<div v-else>
+				<v-card elevation="5" dark color="primary">
+					<v-list-item-group>
+					<v-list-item 
+						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
+						:key="index"
+						dense
+						v-on:click="pesan=item; handelKirimPesan(); mode='teks'">
+						<v-list-item-title>{{ item }}</v-list-item-title>
+						<v-list-item-action>
+							<v-icon>
+								mdi-chevron-right
+							</v-icon>
+						</v-list-item-action>
+					</v-list-item>
+				</v-list-item-group>
+				</v-card>
+			</div>
+		</div>
+	</v-card>
+        </v-col>
+
+		<v-dialog
+			v-model="dialog"
+			max-width="80vw">
+			<v-card>
+				<v-app-bar>
+                <v-toolbar-title>
+                    Alur Welcome
+                </v-toolbar-title>
+                <v-spacer />
+				<v-btn class="mr-2" rounded v-on:click="dialog=false">
+                    Tutup
+                </v-btn>
+                <v-btn color="primary" rounded>
+                    Simpan
+                </v-btn>
+            </v-app-bar>
             <v-subheader>
                 Perintah
             </v-subheader>
@@ -182,82 +241,239 @@
                 </v-simple-table>
                 </v-container>
             </v-container>
-        </v-col>
-        
-        <v-col md="4" class="ma-0 pa-0 h-full">
-        <v-card 
-            class="card-chat d-flex flex-column justify-content-between">
-            <v-card-title>
-                Simulasi
-                <v-spacer/>
-                <v-btn
-                    class="primary"
-                    rounded>
-                    Reset
-                </v-btn>
-            </v-card-title>
-            <v-divider/>
-		<v-card-text class="card-chat-percakapan flex-grow-1">
-			<v-list-item dense
-				v-for="(item, index) in percakapan"
-				:key="index"
-				:class="`mt-1 ${item.saya?'ml-8 justify-end':'mr-8'}`">
-				<v-card 
-					dark 
-					:color="item.saya?'primary':'grey darken-3'" 
-					class="pa-2">
-					<div v-html="item.pesan"></div>
-				</v-card>	
-			</v-list-item>
-			
-		</v-card-text>
-		
-		<div>
-			<v-text-field
-				v-if="percakapan.length===0 || percakapan[percakapan.length-1].mode==='teks'"
-				outlined
-				hide-details=""
-				placeholder="tulis pesan disini ..."
-				dense
-				append-icon="mdi-send"
-				v-model="pesan"
-				v-on:keyup.enter="handelKirimPesan"/>
-
-			<div v-else>
-				<v-card elevation="5" dark color="primary">
-					<v-list-item-group>
-					<v-list-item 
-						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
-						:key="index"
-						dense
-						v-on:click="pesan=item.value; handelKirimPesan(); mode='teks'">
-						<v-list-item-title>{{ item.label }}</v-list-item-title>
-						<v-list-item-action>
-							<v-icon>
-								mdi-chevron-right
-							</v-icon>
-						</v-list-item-action>
-					</v-list-item>
-				</v-list-item-group>
-				</v-card>
-			</div>
-		</div>
-	</v-card>
-        </v-col>
+			</v-card>
+		</v-dialog>
     </v-row>
 </template>
 <script>
 export default {
 	asyncData: function(){
-		// list step
-		// step 1 = identifikasi nama
-		// step 2 = identifikasi kelas
-		// step 3 = sudah diidentifikasi
+		
 		return {
-			step: localStorage.getItem('step')||1,
-			userNama: localStorage.getItem('userNama')||'',
-			userKelas: localStorage.getItem('userKelas')||'',
-			userPelajaran: localStorage.getItem('userPelajaran')||'',
+			data: [
+				{
+					"nama": "Welcome",
+					"id": "0",
+					"parentId": "",
+					"size": "",
+					"katakunci":"halo, hai, mau tanya",
+					"balasan": [
+						"Selamat datang di virtual assistant BPK Penabur",
+						`apa yang bisa kami bantu? <br/>
+						1. jadwal <br/>
+						2. Belajar<br/>
+						3. pengumuman`
+					],
+					"fallback": [
+						"Maaf saya tidak mengerti yang kamu maksud",
+						`coba pilih salah satu menu berikut ini ? <br/>
+						1. jadwal [sd, smp, sma]<br/>
+						2. belajar<br/>
+						3. pengumuman`
+					],
+					mode:"opsi",
+					opsi:[
+						"jadwal",
+						"belajar",
+						"pengumuman"
+					]
+				},
+				{
+					"nama": "Jadwal Sekolah",
+					"id": "1",
+					"parentId": "0",
+					"size": "",
+					"katakunci":"jadwal, jadwal sekolah",
+					"balasan": [
+						`Pilih jadwal sekolah yang kamu mau <br/>
+						1. jadwal smp <br/>
+						2. jadwal sma`
+					],
+					mode:"teks",
+					opsi:[]
+				}, 	
+				{
+					"nama": "SMP",
+					"id": "1.1",
+					"parentId": "1",
+					"size": "",
+					"katakunci":"jadwal smp",
+					"balasan": [
+						`Berikut jadwal smp <br/>
+						Senin : <br/>
+						- matematka
+						- bahasa inggris
+						Selasa : <br/>
+						- matematka
+						- bahasa inggris`
+					],
+					mode:"teks",
+					opsi:[]
+				}, 	
+				{
+					"nama": "SMA",
+					"id": "1.2",
+					"parentId": "1",
+					"size": "",
+					"katakunci":"jadwal sma",
+					"balasan": [
+						`Berikut jadwal sma <br/>
+						Senin : <br/>
+						- matematka
+						- bahasa inggris
+						Selasa : <br/>
+						- matematka
+						- bahasa inggris`
+					],
+					mode:"teks",
+					opsi:[]
+				}, 	
+				{
+					"nama": "Belajar",
+					"id": "2",
+					"parentId": "0",
+					"size": "",
+					"katakunci":"belajar, mau belajar",
+					"balasan": [
+						`Mau belajar apa ?`,
+					],
+					mode:"opsi",
+					opsi:[
+						'belajar matematika',
+						'belajar bahasa inggris',
+						'belajar bahasa indonesia'
+					]
+				}, 	
+				{
+					"nama": "Matematika",
+					"id": "2.1",
+					"parentId": "2",
+					"size": "",
+					"katakunci":"belajar matematika, matematika",
+					"balasan": [
+						`Apa yang kamu inginkan ?`,
+					],
+					mode:"opsi",
+					opsi:[
+						'materi matematika',
+						'latihan soal matematika',
+					]
+				}, 	
+				{
+					"nama": "Materi",
+					"id": "2.1.1",
+					"parentId": "2.1",
+					"size": "",
+					"katakunci":"materi matematika",
+					"balasan": [
+						`Berikut list materi matematika <br/>
+						1. https://www.youtube.com/watch?v=OxHSBdG-hS8 <br/>
+						2. https://www.youtube.com/watch?v=OxHSBdG-hS8 <br/>
+						3. https://www.youtube.com/watch?v=OxHSBdG-hS8 <br/>
+						`,
+					],
+					mode:"teks",
+					opsi:[]
+				}, 	
+				{
+					"nama": "Latihan Soal",
+					"id": "2.1.2",
+					"parentId": "2.1",
+					"size": "",
+					"katakunci":"latihan soal matematika",
+					"balasan": [
+						`Silahkan pilih soal dibawah ini`,
+					],
+					mode:"opsi",
+					opsi:[
+						'latihan soal 1 matematika'
+					]
+				}, 	
+				{
+					"nama": "Soal ke 1",
+					"id": "2.1.2.1",
+					"parentId": "2.1.2",
+					"size": "",
+					"katakunci":"latihan soal 1 matematika",
+					"balasan": [
+						`Sebuah mobil bergerak dengan kecepatan awal 10 m/s. Mobil tersebut dipercepat dengan percepatan 2 m/s2 selama 5 detik. Berapakah kecepatan akhir mobil tersebut? `,
+						`Apakah kamu memerlukan bantuan untuk menyelesaikan soal ini`
+					],
+					mode:"opsi",
+					opsi:[
+						'bantuan soal 1 matematika',
+						'jawab soal 1 matematika'
+					]
+				}, 	
+				{
+					"nama": "Memerlukan bantuan ?",
+					"id": "2.1.2.1.1",
+					"parentId": "2.1.2.1",
+					"size": "",
+					"katakunci":"bantuan soal 1 matematika",
+					"balasan": [
+						`Apakah kamu sudah mengetahui konsep untuk menyelesaikan soal di atas ?`,
+					],
+					mode:"opsi",
+					opsi:[
+						'belum tau konsep soal 1 matematika',
+						'sudah tau konsep soal 1 matematika'
+					]
+				}, 	
+				{
+					"nama": "Sudah mengetahui konsep ",
+					"id": "2.1.2.1.2.1",
+					"parentId": "2.1.2.1.1",
+					"size": "",
+					"katakunci":"Latihan soal matematika",
+					mode:"teks",
+					opsi:[]
+				}, 	
+				{
+					"nama": "Jawab soal",
+					"id": "2.1.2.1.2",
+					"parentId": "2.1.2.1",
+					"size": "",
+					"katakunci":"jawab soal 1 matematika",
+					"balasan":[
+						`Kita samakan jawabannya ya. Jawaban soal di atas adalah C `
+					],
+					mode:"teks",
+					opsi:[]
+				}, 	
+				
+				{
+					"nama": "Bahasa Indonesia",
+					"id": "2.2",
+					"parentId": "2",
+					"size": "",
+					"katakunci":"belajar indonesia, indonesia",
+					mode:"teks",
+					opsi:[]
+				}, 	
+				{
+					"nama": "Bahasa Inggris",
+					"id": "2.3",
+					"parentId": "2",
+					"size": "",
+					"katakunci":"belajar bahasa inggris, inggris",
+					mode:"teks",
+					opsi:[]
+				}, 	
+				{
+					"nama": "Pengumuman",
+					"id": "3",
+					"parentId": "0",
+					"size": "",
+					"katakunci":"pengumuman",
+					"balasan":[
+						`Berikut disampaikan Pengumuman<br/> Tentang Perubahan Daftar Peserta, Waktu, dan Tempat Seleksi Kompetensi Dasar Penerimaan Calon Pegawai Negeri Sipil (CPNS) Kemdikbudristek Tahun 2021<br/><br/>
+							<a href="https://randiekas.id">https://randiekas.id</a>`
+					],
+					mode:"teks",
+					opsi:[]
+				}, 	
+			],
 		}
 	},
 	data: function(){
@@ -269,38 +485,6 @@ export default {
 				
 			],
 			pesan:'',
-			pelajaran:  [
-					{
-						value: 'belajar indonesia',
-						label: 'Bahasa Indonesia'
-					},
-					{
-						value: 'belajar inggris',
-						label: 'Bahasa Inggris'
-					}
-				],
-			materi: {
-				"belajar indonesia":[
-					`<a onclick="handelBukaMateri('https://scola.s3.ap-southeast-1.amazonaws.com/bank_materi/1_a558b8a362f51019f9775d00292dee972c93677e3d9447c3e59b8a0ab2a3497120210119041705.pdf')">- Novel</a>`
-				],
-				"belajar inggris":[
-					`<a onclick="handelBukaMateri('https://scola.s3.ap-southeast-1.amazonaws.com/bank_materi/64b63e922fadd8fd0a251f08f2d7ba9cde38bd9793f17147472aa376a1603ad420190730120145.pdf')">- Adjective</a>`
-				]
-			},
-			tingkat:  [
-					{
-						value: 10,
-						label: '10 - Sepuluh'
-					},
-					{
-						value: 11,
-						label: '11 - Sebelas'
-					},
-					{
-						value: 12,
-						label: '12 - Duabelas'
-					}
-				],
 		}
 	},
 	watch:{
@@ -324,6 +508,12 @@ export default {
 		}
 	},
 	methods: {
+		handelKlik: function(id){
+			this.dialog	 	= true
+		},
+		handelReset: function(){
+			this.percakapan	= []
+		},
 		handelBukaMateri: function(url){
 			
 			this.dialogUrl	= url
@@ -346,130 +536,42 @@ export default {
 			}, delay)
 		},
 		handelResponBot: function(pesan){
-			if(this.step==1){
-				this.userNama	= pesan
-				this.handelKirimPesanDelay(500, {
-					saya: false,
-					pesan: "Halo "+this.userNama,
-					mode: 'teks',
-					opsi: [],
-				})
 
-				this.handelKirimPesanDelay(1000, {
-					saya: false,
-					pesan: "Kamu kelas berapa ?",
-					mode: 'opsi',
-					opsi: this.tingkat
-				})
-				this.step	= 2
-			}else if(this.step==2){
-				this.userKelas	= pesan
-				this.handelKirimPesanDelay(1000, {
-					saya: false,
-					pesan: `Ok ${this.userNama}, kamu mau belajar apa hari ini ?`,
-					mode: 'opsi',
-					opsi: this.pelajaran
-				})
+			let durasi	= 0;
+			let balasan	= { data: [], mode: "teks", opsi:[]}
+			
+			// cari kata, jika ada yang mirip, maka respon jawabanya adalah ituuu, hehe
+			this.data.some((item, index)=>{
 
-				this.step		= 3
-			}else{
-				this.userPelajaran = pesan
-				if(pesan==="belajar"){
-					this.handelKirimPesanDelay(1000, {
-						saya: false,
-						pesan: `Ok ${this.userNama}, kamu mau belajar apa hari ini ?`,
-						mode: 'opsi',
-						opsi: this.pelajaran
-					})
-				}else{
-					this.handelKirimPesanDelay(1000, {
-						saya: false,
-						pesan: ([
-							`Untuk ${pesan} kelas ${this.userKelas}, berikut materinya `,
-						].concat(this.materi[pesan])).join(`<br/>`),
-						mode: 'teks',
-						opsi: []
-					}),
-
-					this.handelKirimPesanDelay(5000, {
-						saya: false,
-						pesan: `Jika mau lihat materi lainyya, cukup ketik "belajar" yaa`,
-						mode: 'teks',
-						opsi: []
-					})
+				if(item.katakunci.includes(pesan)){
+					balasan.data	= item.balasan
+					balasan.mode	= item.mode
+					balasan.opsi	= item.opsi
+					return true;
 				}
-				
-				
-				
+
+			})
+
+			// jika tidak menemukan, maka kasih fallback
+			if(balasan.data.length===0){
+				balasan.data		= this.data[0].fallback
+				balasan.mode		= this.data[0].mode
+				balasan.opsi		= this.data[0].opsi
 			}
+
+			balasan.data.map((item)=>{
+				this.handelKirimPesanDelay(durasi, {
+					saya: false,
+					pesan: item,
+					mode: balasan.mode,
+					opsi: balasan.opsi
+				})
+				durasi	+=1000
+			})
+			
 		},
 	},
 	mounted: function(){
-		window.handelBukaMateri = this.handelBukaMateri.bind(this);
-		this.handelKirimPesanDelay(500, {
-			saya: false,
-			pesan: "Selamat pagi",
-			mode: 'teks',
-			opsi: [],
-		})
-
-		
-
-		if(this.step==1){
-
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Selamat datang di virtual assistant BPK Penabur",
-				mode: 'teks',
-				opsi: [],
-			})
-			
-			this.handelKirimPesanDelay(1500, {
-				saya: false,
-				pesan: "Nama kamu siapa ?",
-				mode: 'teks',
-				opsi: [],
-			})
-
-		}else if(this.step==2){
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Halo "+this.userNama,
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Selamat datang kembali di virtual assistant BPK Penabur",
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(1500, {
-				saya: false,
-				pesan: "Kamu kelas berapa ?",
-				mode: 'opsi',
-				opsi: this.tingkat
-			})
-		}else{
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Halo "+this.userNama,
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(1500, {
-				saya: false,
-				pesan: "Selamat datang kembali di virtual assistant BPK Penabur",
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(2000, {
-				saya: false,
-				pesan: `Ok ${this.userNama}, kamu mau belajar apa hari ini ?`,
-				mode: 'opsi',
-				opsi: this.pelajaran
-			})
-		}
 		
 	
 

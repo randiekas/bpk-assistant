@@ -416,16 +416,46 @@ export default {
 					],
 					mode:"opsi",
 					opsi:[
-						'belum tau konsep soal 1 matematika',
-						'sudah tau konsep soal 1 matematika'
+						'sudah tau konsep soal 1 matematika',
+						'belum tau konsep soal 1 matematika'
 					]
 				}, 	
 				{
 					"nama": "Sudah mengetahui konsep ",
-					"id": "2.1.2.1.2.1",
+					"id": "2.1.2.1.1.1",
 					"parentId": "2.1.2.1.1",
 					"size": "",
-					"katakunci":"Latihan soal matematika",
+					"katakunci":"sudah tau konsep soal 1 matematika",
+					"parameter":[
+						{
+							kode:"rumusdigunakan",
+							prompt: `Baik berarti sekarang coba kamu tentukan rumus mana yang kita gunakan untuk menyelesaikan soal di atas ?
+									A. Vt = Vo + a.t <br/>
+									B. S = Vo.t + ½ a.t2 <br/>
+									C. Vt2 = Vo2 + 2.a.s<br/>
+									Jawabannya adalah ?`,
+							mode:"opsi",
+							opsi:[
+								'a',
+								'b',
+								'c',
+							]
+						}
+					],
+					"balasan":[
+						"Yu coba soal lainnya",
+					],
+					mode:"opsi",
+					opsi:[
+						'latihan soal matematika',
+					]
+				}, 	
+				{
+					"nama": "belum mengetahui konsep ",
+					"id": "2.1.2.1.1.2",
+					"parentId": "2.1.2.1.1",
+					"size": "",
+					"katakunci":"belum tau konsep soal 1 matematika",
 					mode:"teks",
 					opsi:[]
 				}, 	

@@ -20,6 +20,7 @@ export default {
     },
     mounted: function(){
         this.renderChart();
+        window.appchart=this;
     },
     methods: {
         renderChart: function() {
@@ -52,11 +53,16 @@ export default {
                 const color = colors[depth % colors.length];
                 return `
                     <div style="font-family: 'Inter', sans-serif;background-color:white; position:absolute;margin-top:-1px; margin-left:-1px;width:${width}px;height:${height}px;border-radius:10px;border: 1px solid ${color}">
-                        <div style="font-size:15px;color:#08011E;margin-left:20px;margin-top:16px"> 
-                            ${data.nama} 
-                        </div>
-                        <div style="color:#716E7B;margin-left:20px;margin-top:3px;font-size:10px;"> 
-                            ${data.katakunci} 
+                        <button style="position:fixed; right:0; z-index:999999999999999999px; top:0">
+                            <i onclick="window.appchart.handelKlik('tambah')" data-v-f6275500="" aria-hidden="true" class="v-icon notranslate mdi mdi-plus"></i>
+                        </button>
+                        <div onclick="window.appchart.handelKlik('${data.id}')" style="height:100%">
+                            <div style="font-size:15px;color:#08011E;margin-left:20px;padding-top:16px;"> 
+                                ${data.nama} 
+                            </div>
+                            <div style="color:#716E7B;margin-left:20px;margin-top:3px;font-size:10px;"> 
+                                ${data.katakunci} 
+                            </div>
                         </div>
                     </div>
                 `;
@@ -69,12 +75,6 @@ export default {
                 //     </div>
                 // `
             })
-            // .nodeContent(function(d, i, arr, state) {
-            //     return (`
-            //         <a href="tes">sdfsdf</a>
-            //     `);
-            // })
-            .onNodeClick(d => this.handelKlik(d))
             .render();
 
             this.chartReference.layout('left')

@@ -54,7 +54,7 @@ export default {
                 return `
                     <div style="font-family: 'Inter', sans-serif;background-color:white; position:absolute;margin-top:-1px; margin-left:-1px;width:${width}px;height:${height}px;border-radius:10px;border: 1px solid ${color}">
                         <button style="position:fixed; right:0; z-index:999999999999999999px; top:0">
-                            <i onclick="window.appchart.handelKlik('tambah')" data-v-f6275500="" aria-hidden="true" class="v-icon notranslate mdi mdi-plus"></i>
+                            <i onclick="window.appchart.handelKlik('tambah', '${data.id}')" data-v-f6275500="" aria-hidden="true" class="v-icon notranslate mdi mdi-plus"></i>
                         </button>
                         <div onclick="window.appchart.handelKlik('${data.id}')" style="height:100%">
                             <div style="font-size:15px;color:#08011E;margin-left:20px;padding-top:16px;"> 

@@ -3,8 +3,8 @@
 	<v-row>
 		<v-col md="5">
 			<v-container style="height:80vh" class="d-flex">
-				<div class="mx-auto my-auto pa-16">
-				<h1 class="display-4">Virtual Assistant BPK Penabur</h1>
+				<div class="mx-auto my-auto">
+				<h1 class="display-3">Virtual Assistant BPK Penabur</h1>
 				<p class="text-body-1">
 					Selamat datang di situs resmi belajar,  berbasis personal assistant artificial intellegence.
 				</p>
@@ -34,11 +34,16 @@
 			mdi-chat
 		</v-icon>
 	</v-btn>
-
-	<v-card 
-		v-if="fab"
-		class="card-chat d-flex flex-column justify-content-between">
-		
+	<v-dialog
+		v-model="fab"
+		persistent
+		max-width="480">
+		<v-card class="card-chat d-flex flex-column justify-content-between">
+		<div>
+			<v-toolbar>
+				<v-toolbar-title>superbot - Bu Ani</v-toolbar-title>
+			</v-toolbar>
+		</div>
 		<v-card-text class="card-chat-percakapan flex-grow-1">
 			<v-list-item dense
 				v-for="(item, index) in percakapan"
@@ -48,7 +53,7 @@
 					dark 
 					:color="item.saya?'primary':'grey darken-3'" 
 					class="pa-2">
-					<div v-html="item.pesan"></div>
+					<div style="white-space: pre-line" v-html="item.pesan"></div>
 				</v-card>	
 			</v-list-item>
 			
@@ -72,8 +77,8 @@
 						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
 						:key="index"
 						dense
-						v-on:click="pesan=item.value; handelKirimPesan(); mode='teks'">
-						<v-list-item-title>{{ item.label }}</v-list-item-title>
+						v-on:click="pesan=item; handelKirimPesan(); mode='teks'">
+						<v-list-item-title>{{ item }}</v-list-item-title>
 						<v-list-item-action>
 							<v-icon>
 								mdi-chevron-right
@@ -85,6 +90,9 @@
 			</div>
 		</div>
 	</v-card>
+	</v-dialog>
+	
+	
 
 	<v-dialog
 		v-model="dialog"
@@ -93,6 +101,7 @@
 			:src="dialogUrl"
 			style="width:100%; height:80vh; border:none"/>
     </v-dialog>
+
 
 </div>
 </template>
@@ -196,144 +205,44 @@ export default {
 			}, delay)
 		},
 		handelResponBot: function(pesan){
-			if(this.step==1){
-				this.userNama	= pesan
-				this.handelKirimPesanDelay(500, {
-					saya: false,
-					pesan: "Halo "+this.userNama,
-					mode: 'teks',
-					opsi: [],
-				})
+			let durasi	= 1000;
+            let balasan	= { data: [], mode: "teks", opsi:[]}
+            const payload           = {
+                katakunci: pesan
+            }
 
-				this.handelKirimPesanDelay(1000, {
-					saya: false,
-					pesan: "Kamu kelas berapa ?",
-					mode: 'opsi',
-					opsi: this.tingkat
-				})
-				this.step	= 2
-			}else if(this.step==2){
-				this.userKelas	= pesan
-				this.handelKirimPesanDelay(1000, {
-					saya: false,
-					pesan: `Ok ${this.userNama}, kamu mau belajar apa hari ini ?`,
-					mode: 'opsi',
-					opsi: this.pelajaran
-				})
+            this.$axios.$post(`publik/alur/pesan`, payload).then((resp)=>{
+                balasan.data	= JSON.parse(resp.data.balasan)
+                balasan.mode	= resp.data.mode
+                balasan.opsi	= JSON.parse(resp.data.opsi)
 
-				this.step		= 3
-			}else{
-				this.userPelajaran = pesan
-				if(pesan==="belajar"){
-					this.handelKirimPesanDelay(1000, {
-						saya: false,
-						pesan: `Ok ${this.userNama}, kamu mau belajar apa hari ini ?`,
-						mode: 'opsi',
-						opsi: this.pelajaran
-					})
-				}else{
-					this.handelKirimPesanDelay(1000, {
-						saya: false,
-						pesan: ([
-							`Untuk ${pesan} kelas ${this.userKelas}, berikut materinya `,
-						].concat(this.materi[pesan])).join(`<br/>`),
-						mode: 'teks',
-						opsi: []
-					}),
+                balasan.data.map((item)=>{
+                    this.handelKirimPesanDelay(durasi, {
+                        saya: false,
+                        pesan: item,
+                        mode: balasan.mode,
+                        opsi: balasan.opsi
+                    })
+                    durasi	+=1000
+                })
+            })
 
-					this.handelKirimPesanDelay(5000, {
-						saya: false,
-						pesan: `Jika mau lihat materi lainyya, cukup ketik "belajar" yaa`,
-						mode: 'teks',
-						opsi: []
-					})
-				}
-				
-				
-				
-			}
+			
 		},
 	},
 	mounted: function(){
-		window.handelBukaMateri = this.handelBukaMateri.bind(this);
-		this.handelKirimPesanDelay(500, {
-			saya: false,
-			pesan: "Selamat pagi",
-			mode: 'teks',
-			opsi: [],
-		})
-
-		
-
-		if(this.step==1){
-
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Selamat datang di virtual assistant BPK Penabur",
-				mode: 'teks',
-				opsi: [],
-			})
-			
-			this.handelKirimPesanDelay(1500, {
-				saya: false,
-				pesan: "Nama kamu siapa ?",
-				mode: 'teks',
-				opsi: [],
-			})
-
-		}else if(this.step==2){
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Halo "+this.userNama,
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Selamat datang kembali di virtual assistant BPK Penabur",
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(1500, {
-				saya: false,
-				pesan: "Kamu kelas berapa ?",
-				mode: 'opsi',
-				opsi: this.tingkat
-			})
-		}else{
-			this.handelKirimPesanDelay(1000, {
-				saya: false,
-				pesan: "Halo "+this.userNama,
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(1500, {
-				saya: false,
-				pesan: "Selamat datang kembali di virtual assistant BPK Penabur",
-				mode: 'teks',
-				opsi: [],
-			})
-			this.handelKirimPesanDelay(2000, {
-				saya: false,
-				pesan: `Ok ${this.userNama}, kamu mau belajar apa hari ini ?`,
-				mode: 'opsi',
-				opsi: this.pelajaran
-			})
-		}
-		
-	
-
+		this.pesan	= "halo"
+		this.handelKirimPesan()
 	},
 }
 </script>
 <style scoped>
+
 .card-chat{
-	width:400px; 
-	position: absolute;
-	right:20px;
-	bottom:100px;
-	height:505px
+	height:70vh;
+	display:none
 }
+
 .card-chat-percakapan{
 	overflow:auto;
 }

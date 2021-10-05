@@ -13,7 +13,7 @@
 				<v-icon>mdi-chat</v-icon>
 			</v-list-item-action>
 			<v-list-item-content>
-				<v-list-item-title>Hi (Default)</v-list-item-title>
+				<v-list-item-title>Chat Builder</v-list-item-title>
 			</v-list-item-content>
 		</v-list-item>
 		<v-list-item
@@ -31,10 +31,10 @@
 		</v-list-item>
 		<v-list-item>
 			<v-list-item-action>
-				<v-icon>mdi-chat-plus</v-icon>
+				<v-icon>mdi-chat-processing</v-icon>
 			</v-list-item-action>
 			<v-list-item-content>
-				<v-list-item-title>Tambah Intent</v-list-item-title>
+				<v-list-item-title>Riwayat Chat</v-list-item-title>
 			</v-list-item-content>
 		</v-list-item>
 		<v-list-item
@@ -88,16 +88,7 @@ data () {
 	drawer: false,
 	fixed: false,
 	items: [
-		{
-			icon: 'mdi-forum',
-			title: 'Indonesia',
-			to: '/intent/indonesia'
-		},
-		{
-			icon: 'mdi-forum',
-			title: 'Inggris',
-			to: '/intent/inggris'
-		},
+		
 	],
 	miniVariant: true,
 	right: true,

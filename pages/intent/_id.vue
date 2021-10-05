@@ -38,7 +38,7 @@
                 <v-btn
                     class="primary"
                     rounded
-					v-on:click="handelReset">
+					@click="handelReset">
                     Reset
                 </v-btn>
             </v-card-title>
@@ -52,7 +52,7 @@
 					dark 
 					:color="item.saya?'primary':'grey darken-3'" 
 					class="pa-2">
-					<div v-html="item.pesan"></div>
+					<div style="white-space: pre-line" v-html="item.pesan"></div>
 				</v-card>	
 			</v-list-item>
 			
@@ -76,7 +76,7 @@
 						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
 						:key="index"
 						dense
-						v-on:click="pesan=item; handelKirimPesan(); mode='teks'">
+						@click="pesan=item; handelKirimPesan(); mode='teks'">
 						<v-list-item-title>{{ item }}</v-list-item-title>
 						<v-list-item-action>
 							<v-icon>
@@ -93,17 +93,35 @@
 
 		<v-dialog
 			v-model="dialog"
-			max-width="80vw">
+			max-width="50vw">
 			<v-card>
 				<v-app-bar>
-                <v-toolbar-title>
-                    Alur Welcome
+                <v-toolbar-title class="py-6">
+                    <v-text-field
+                        dense
+                        v-model="nama"
+                        hide-details=""
+                        label="Nama Alur"
+                        outlined/>
                 </v-toolbar-title>
                 <v-spacer />
-				<v-btn class="mr-2" rounded v-on:click="dialog=false">
+				<v-btn class="mr-2" rounded @click="dialog=false">
                     Tutup
                 </v-btn>
-                <v-btn color="primary" rounded>
+
+				<v-btn 
+                    v-if="!parentid"
+                    class="mr-2 red" 
+                    dark
+                    rounded 
+                    @click="handelHapus">
+                    Hapus
+                </v-btn>
+                
+                <v-btn 
+                    color="primary" 
+                    rounded
+                    @click="handelSimpan">
                     Simpan
                 </v-btn>
             </v-app-bar>
@@ -112,31 +130,29 @@
             </v-subheader>
             <v-container>
                 <v-text-field
+                    v-for="(item, index) in perintah"
+                    :key="index"
                     dense
                     placeholder="Perintah"
-                    value="hi"
+                    v-model="perintah[index]"
                     outlined
                     hide-details=""
                     class="mb-1"
-                    append-icon="mdi-delete"/>
-                <v-text-field
-                    dense
-                    placeholder="Perintah"
-                    value="hello"
-                    outlined
-                    hide-details=""
                     append-icon="mdi-delete"
-                    class="mb-1"/>
+                    @click:append="handelHapusPerintah(index)"/>
                 <v-text-field
                     dense
-                    placeholder="Tulish perintah disini ..."
+                    placeholder="Tulis perintah disini ..."
                     outlined
                     hide-details=""
                     append-icon="mdi-plus"
+                    v-model="inputPerintah"
+                    @click:append="handelTambahPerintah"
+                    v-on:keyup.enter="handelTambahPerintah"
                     class="mb-1"/>
             </v-container>
 
-            <v-subheader>
+            <!-- <v-subheader>
                 Parameter
             </v-subheader> 
 			<v-container>
@@ -194,57 +210,126 @@
                         </tr>
                     </tbody>
                 </v-simple-table>
-			</v-container>
+			</v-container> -->
 			
 
 			<v-subheader>
 				Response
 			</v-subheader>
             <v-container>
-                <v-container>
-                    <v-simple-table dense>
+                <v-simple-table dense>
                     <thead>
                         <tr>
-                            <th style="width:60%">Response</th>
-                            <th style="width:30%">Opsi</th>
+                            <th style="width:90%">Response</th>
                             <th style="width:10%"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Halo ${nama}, kamu mau belajar apa hari ini ?</td>
+                        <tr 
+                            v-for="(item, index) in response"
+                            :key="index">
                             <td>
-                                ['matematika', 'bahasa indonesia']
+                                <v-textarea
+                                    placeholder="Ketik respon bot disini ..."
+                                    v-model="response[index]"/>
                             </td>
                             <td>
-                                <v-btn icon>
+                                <v-btn 
+                                    icon
+                                    @click="handelHapusResponse">
                                     <v-icon>mdi-delete</v-icon>
                                 </v-btn>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <v-text-field
-                                    hide-details=""
-                                    dense/>
+                                <v-textarea
+                                    placeholder="Ketik respon bot disini ..."
+                                    v-model="inputResponse"/>
                             </td>
                             <td>
-                                <v-text-field
-                                    hide-details=""
-                                    dense/>
-                            </td>
-                            <td>
-                                <v-btn icon>
+                                <v-btn 
+                                    icon
+                                    @click="handelTambahResponse">
                                     <v-icon>mdi-plus</v-icon>
                                 </v-btn>
                             </td>
                         </tr>
                     </tbody>
                 </v-simple-table>
-                </v-container>
+            </v-container>
+
+            <v-subheader class="pb-0">
+				Mode Keyboard balasan user
+			</v-subheader>
+            <v-container>
+                <v-radio-group v-model="mode" row class="mt-0 pt-0">
+                    <v-radio
+                        label="Teks"
+                        value="teks"/>
+                    <v-radio
+                        label="Opsi"
+                        value="opsi"/>
+                </v-radio-group>
+                <div
+                    v-if="mode==='opsi'">
+                    <v-text-field
+                        v-for="(item, index) in opsi"
+                        :key="index"
+                        dense
+                        placeholder="Opsi"
+                        v-model="opsi[index]"
+                        outlined
+                        hide-details=""
+                        class="mb-1"
+                        append-icon="mdi-delete"
+                        @click:append="handelHapusOpsi(index)"/>
+                    <v-text-field
+                        dense
+                        placeholder="Tulish Opsi disini ..."
+                        outlined
+                        hide-details=""
+                        append-icon="mdi-plus"
+                        v-model="inputOpsi"
+                        @click:append="handelTambahOpsi"
+                        v-on:keyup.enter="handelTambahOpsi"
+                        class="mb-1"/>
+                </div>
+                
             </v-container>
 			</v-card>
 		</v-dialog>
+        <v-dialog
+			v-model="isFetching"
+			hide-overlay
+			persistent
+			width="300">
+			<v-card
+				color="primary"
+				dark>
+				<v-card-text>
+				Sedang memproses, mohon tunggu
+				<v-progress-linear
+					indeterminate
+					color="white"
+					class="mb-0"
+				></v-progress-linear>
+				</v-card-text>
+			</v-card>
+		</v-dialog>
+        <v-dialog
+            v-model="alertMessage.status"
+            max-width="300">
+            <v-alert
+                border="left"
+                color="deep-purple accent-4"
+                type="info"
+                dark
+                class="mb-0">
+                    {{ alertMessage.message }}
+                    <v-btn class="mt-4" block v-on:click="alertMessage.status=false">Tutup</v-btn>
+            </v-alert>
+        </v-dialog>
     </v-row>
 </template>
 <script>
@@ -257,6 +342,11 @@ export default {
 	},
 	data: function(){
 		return {
+            alertMessage: {
+                status: false,
+                message: ''
+            },
+            isFetching: false,
 			dialog: false,
 			dialogUrl: '',
 			fab: true,
@@ -264,48 +354,124 @@ export default {
 				
 			],
 			pesan:'',
-			inputPerintah: [],
-			inputParameter: [],
-			inputResponse: [],
+
+            parentid:0,
+            perintah:[],
+            response:[],
+            mode:'teks',
+            opsi:[],
+            nama: '',
+			inputPerintah: '',
+			inputResponse: '',
+			inputOpsi: '',
 		}
 	},
 	watch:{
+        dialog:function(){
+            if(this.dialog===false){
+                this.mode           = 'teks',
+                this.opsi           = []
+                this.nama           = ''
+                this.inputPerintah  = ''
+                this.inputResponse  = ''
+                this.inputOpsi      = ''
+            }
+        },
 		percakapan: function(){
 			setInterval(()=>{
 				const chatarea	= document.querySelector(".card-chat-percakapan")
 				chatarea.scrollTo(0, chatarea.scrollHeight+10000)
 			}, 500)
 		},
-		userNama: function(){
-			localStorage.setItem('userNama', this.userNama)
-		},
-		userKelas: function(){
-			localStorage.setItem('userKelas', this.userKelas)
-		},
-		userPelajaran: function(){
-			localStorage.setItem('userPelajaran', this.userPelajaran)
-		},
-		step: function(){
-			localStorage.setItem('step', this.step)
-		}
 	},
 	mounted: function(){
 		this.handelLoadDataAlur()
 	},
 	methods: {
+        handelSimpan: function(){
+            this.isFetching = true
+            const payload   = {
+                id: this.id,
+                parentid: this.parentid,
+                nama: this.nama,
+                katakunci: this.perintah.join(),
+                balasan: JSON.stringify(this.response),
+                fallback: '',
+                mode: this.mode,
+                opsi: JSON.stringify(this.opsi)
+            }
+            this.$axios.$post(`publik/alur/simpan`, payload).then((resp)=>{
+                this.handelLoadDataAlur()
+                this.dialog         = false
+                this.isFetching     = false
+                this.alertMessage   = {
+                    status: true,
+                    message: resp.message
+                }
+            })
+        },
+        handelHapus: function(){
+            this.isFetching = true
+            this.$axios.$get(`publik/alur/hapus/${this.id}`).then((resp)=>{
+                this.handelLoadDataAlur()
+                this.dialog         = false
+                this.isFetching     = false
+                this.alertMessage   = {
+                    status: true,
+                    message: resp.message
+                }
+            })
+        },
+        handelTambahPerintah: function(){
+            this.perintah.push(this.inputPerintah)
+            this.inputPerintah  = ''
+        },
+        handelHapusPerintah: function(index){
+            this.perintah.splice(index,1)
+        },
+        handelTambahResponse: function(){
+            this.response.push(this.inputResponse)
+            this.inputResponse  = ''
+        },
+        handelHapusResponse: function(index){
+            this.response.splice(index,1)
+        },
+        handelTambahOpsi: function(){
+            this.opsi.push(this.inputOpsi)
+            this.inputOpsi      = ''
+        },
+        handelHapusOpsi: function(index){
+            this.opsi.splice(index,1)
+        },
 		handelLoadDataAlur: async function(){
 			this.data    = (await this.$axios.$get(`publik/alur`)).data
-			console.log(this.data)
 		},
-		handelKlik: function(id){
-			console.log(id)
+		handelKlik: function(id,parentid=''){
+			if(id=="tambah"){
+                this.id         = ''
+                this.nama       = ''
+                this.parentid   = parentid
+                this.perintah   = []
+                this.response   = []
+                this.mode       = 'teks'
+                this.opsi       = []
+            }else{
+                const data      = this.data.filter((item)=>item.id==id)[0]
+                this.id         = id
+                this.parentid   = data.parentid
+                this.nama       = data.nama
+                this.perintah   = data.katakunci.split(",")
+                this.response   = JSON.parse(data.balasan)
+                this.mode       = data.mode
+                this.opsi       = JSON.parse(data.opsi)
+            }
 			this.dialog	 	= true
+
 		},
 		handelReset: function(){
 			this.percakapan	= []
 		},
 		handelBukaMateri: function(url){
-			
 			this.dialogUrl	= url
 			this.dialog	 	= true
 		},
@@ -326,42 +492,61 @@ export default {
 			}, delay)
 		},
 		handelResponBot: function(pesan){
-
 			let durasi	= 0;
-			let balasan	= { data: [], mode: "teks", opsi:[]}
+            let balasan	= { data: [], mode: "teks", opsi:[]}
+            const payload           = {
+                katakunci: pesan
+            }
+
+            this.$axios.$post(`publik/alur/pesan`, payload).then((resp)=>{
+                balasan.data	= JSON.parse(resp.data.balasan)
+                balasan.mode	= resp.data.mode
+                balasan.opsi	= JSON.parse(resp.data.opsi)
+
+                balasan.data.map((item)=>{
+                    this.handelKirimPesanDelay(durasi, {
+                        saya: false,
+                        pesan: item,
+                        mode: balasan.mode,
+                        opsi: balasan.opsi
+                    })
+                    durasi	+=1000
+                })
+            })
+
 			
-			// cari kata, jika ada yang mirip, maka respon jawabanya adalah ituuu, hehe
-			this.data.some((item, index)=>{
+			
+			// // cari kata, jika ada yang mirip, maka respon jawabanya adalah ituuu, hehe
+			// this.data.some((item, index)=>{
 
-				if(item.katakunci.includes(pesan)){
-					balasan.data	= item.balasan
-					balasan.mode	= item.mode
-					balasan.opsi	= item.opsi
-					return true;
-				}
+			// 	if(item.katakunci.includes(pesan)){
+			// 		balasan.data	= item.balasan
+			// 		balasan.mode	= item.mode
+			// 		balasan.opsi	= item.opsi
+			// 		return true;
+			// 	}
 
-			})
+			// })
 
-			// jika tidak menemukan, maka kasih fallback
-			if(balasan.data.length===0){
-				balasan.data		= this.data[0].fallback
-				balasan.mode		= this.data[0].mode
-				balasan.opsi		= this.data[0].opsi
-			}
+			// // jika tidak menemukan, maka kasih fallback
+			// if(balasan.data.length===0){
+			// 	balasan.data		= this.data[0].fallback
+			// 	balasan.mode		= this.data[0].mode
+			// 	balasan.opsi		= this.data[0].opsi
+			// }
 
-			balasan.data.map((item)=>{
-				this.handelKirimPesanDelay(durasi, {
-					saya: false,
-					pesan: item,
-					mode: balasan.mode,
-					opsi: balasan.opsi
-				})
-				durasi	+=1000
-			})
+			// balasan.data.map((item)=>{
+			// 	this.handelKirimPesanDelay(durasi, {
+			// 		saya: false,
+			// 		pesan: item,
+			// 		mode: balasan.mode,
+			// 		opsi: balasan.opsi
+			// 	})
+			// 	durasi	+=1000
+			// })
 			
 		},
 	},
-	
 }
 </script>
 <style scoped>

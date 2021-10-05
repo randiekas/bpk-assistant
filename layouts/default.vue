@@ -1,6 +1,5 @@
 <template>
 <v-app>
-	
 	<v-app-bar
 		:clipped-left="clipped"
 		fixed
@@ -10,7 +9,7 @@
 			<v-img src="https://scola-smak1bpk.s3.ap-southeast-1.amazonaws.com/cms/login/20200929203726.png"/>
 		</v-toolbar-title>
 		<v-spacer />
-		<v-btn
+		<!-- <v-btn
 			class="mx-1"
 			text>
 			About
@@ -29,7 +28,7 @@
 			class="mx-1"
 			text>
 			Facility
-		</v-btn>
+		</v-btn> -->
 		<v-btn
 			class="primary"
 			text
@@ -41,12 +40,6 @@
 		<nuxt-child />
 	</v-main>
 	
-	<v-footer
-	:absolute="!fixed"
-	app
-	>
-	<span>&copy; {{ new Date().getFullYear() }}</span>
-	</v-footer>
 </v-app>
 </template>
 

@@ -1,12 +1,35 @@
 <template>
 <v-app>
+    <v-dialog
+        v-model="isFetching"
+        persistent
+        width="300"
+        >
+        <v-card
+            color="primary"
+            dark
+        >
+            <v-card-text>
+            Sedang diproses ...
+            <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+            ></v-progress-linear>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
 	<v-app-bar
 		:clipped-left="clipped"
 		fixed
-		app
-		color="white">
+		app>
 		<v-toolbar-title>
-			<v-img src="https://scola-smak1bpk.s3.ap-southeast-1.amazonaws.com/cms/login/20200929203726.png"/>
+            <nuxt-link to="/">
+
+                <v-img
+                    class="white"
+                    src="https://scola-smak1bpk.s3.ap-southeast-1.amazonaws.com/cms/login/20200929203726.png"/>
+            </nuxt-link>
 		</v-toolbar-title>
 		<v-spacer />
 		<!-- <v-btn
@@ -32,14 +55,15 @@
 		<v-btn
 			class="primary"
 			text
-			to="/intent/beranda">
+			to="/masuk">
 			Masuk
 		</v-btn>
 	</v-app-bar>
 	<v-main>
-		<nuxt-child />
+		<nuxt-child
+            :setFetching="setFetching"/>
 	</v-main>
-	
+
 </v-app>
 </template>
 
@@ -65,8 +89,14 @@ export default {
 			miniVariant: false,
 			right: true,
 			rightDrawer: false,
-			title: 'Vuetify.js'
+			title: 'Vuetify.js',
+            isFetching: false
 		}
+	},
+    methods:{
+        setFetching: function(status){
+            this.isFetching = status
+        }
 	}
 }
 </script>

@@ -12,19 +12,10 @@
                 <v-toolbar-title>
                     Chatbot builder
                 </v-toolbar-title>
-                <v-btn
-                    small
-                    class="ml-4"
-                    rounded>
-                    <v-icon left>
-                        mdi-account
-                    </v-icon>
-                    randiekas@gmail.com
-                </v-btn>
-                <v-spacer />
+                <!-- <v-spacer />
                 <v-btn color="primary" rounded>
                     Simpan
-                </v-btn>
+                </v-btn> -->
             </v-app-bar>
 
         </v-col>
@@ -44,6 +35,7 @@
             </v-card-title>
             <v-divider/>
 		<v-card-text class="card-chat-percakapan flex-grow-1">
+            <render-component html="<v-btn>tes</v-btn>"/>
 			<v-list-item dense
 				v-for="(item, index) in percakapan"
 				:key="index"
@@ -53,6 +45,22 @@
 					:color="item.saya?'primary':'grey darken-3'"
 					class="pa-2">
 					<div style="white-space: pre-line" v-html="item.pesan"></div>
+                    <v-card dark :color="item.saya?'grey darken-3':'primary'" v-if="item.opsi.length>0" flat outlined>
+                        <v-list-item-group>
+                        <v-list-item
+                            v-for="(row, key) in item.opsi"
+                            :key="key"
+                            dense
+                            @click="pesan=row; handelKirimPesan(); mode='teks'">
+                            <v-list-item-title>{{ row }}</v-list-item-title>
+                            <v-list-item-action>
+                                <v-icon>
+                                    mdi-chevron-right
+                                </v-icon>
+                            </v-list-item-action>
+                        </v-list-item>
+                    </v-list-item-group>
+                    </v-card>
 				</v-card>
 			</v-list-item>
 
@@ -60,7 +68,6 @@
 
 		<div>
 			<v-text-field
-				v-if="percakapan.length===0 || percakapan[percakapan.length-1].mode==='teks'"
 				outlined
 				hide-details=""
 				placeholder="tulis pesan disini ..."
@@ -68,25 +75,6 @@
 				append-icon="mdi-send"
 				v-model="pesan"
 				v-on:keyup.enter="handelKirimPesan"/>
-
-			<div v-else>
-				<v-card elevation="5" dark color="primary">
-					<v-list-item-group>
-					<v-list-item
-						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
-						:key="index"
-						dense
-						@click="pesan=item; handelKirimPesan(); mode='teks'">
-						<v-list-item-title>{{ item }}</v-list-item-title>
-						<v-list-item-action>
-							<v-icon>
-								mdi-chevron-right
-							</v-icon>
-						</v-list-item-action>
-					</v-list-item>
-				</v-list-item-group>
-				</v-card>
-			</div>
 		</div>
 	</v-card>
         </v-col>
@@ -214,13 +202,13 @@
 
 
 			<v-subheader>
-				Response
+				Respon Bot
 			</v-subheader>
             <v-container>
                 <v-simple-table dense>
                     <thead>
                         <tr>
-                            <th style="width:90%">Response</th>
+                            <th style="width:90%"></th>
                             <th style="width:10%"></th>
                         </tr>
                     </thead>
@@ -333,7 +321,9 @@
     </v-row>
 </template>
 <script>
+
 export default {
+    layout: 'beranda',
 	asyncData: function(){
 
 		return {
@@ -378,10 +368,11 @@ export default {
             }
         },
 		percakapan: function(){
-			setInterval(()=>{
-				const chatarea	= document.querySelector(".card-chat-percakapan")
-				chatarea.scrollTo(0, chatarea.scrollHeight+10000)
-			}, 500)
+			// setInterval(()=>{
+			// 	const chatarea	= document.querySelector(".card-chat-percakapan")
+            //     console.log("panggil")
+			// 	chatarea.scrollTo(0, chatarea.scrollHeight+10000)
+			// }, 500)
 		},
 	},
 	mounted: function(){
@@ -389,7 +380,7 @@ export default {
 	},
 	methods: {
         handelSimpan: function(){
-            this.isFetching = true
+            // this.isFetching = true
             const payload   = {
                 id: this.id,
                 parentid: this.parentid,
@@ -400,15 +391,16 @@ export default {
                 mode: this.mode,
                 opsi: JSON.stringify(this.opsi)
             }
-            this.$axios.$post(`publik/alur/simpan`, payload).then((resp)=>{
-                this.handelLoadDataAlur()
-                this.dialog         = false
-                this.isFetching     = false
-                this.alertMessage   = {
-                    status: true,
-                    message: resp.message
-                }
-            })
+            this.data.push(payload)
+            // this.$axios.$post(`publik/alur/simpan`, payload).then((resp)=>{
+            //     this.handelLoadDataAlur()
+            //     this.dialog         = false
+            //     this.isFetching     = false
+            //     this.alertMessage   = {
+            //         status: true,
+            //         message: resp.message
+            //     }
+            // })
         },
         handelHapus: function(){
             this.isFetching = true
@@ -444,7 +436,45 @@ export default {
             this.opsi.splice(index,1)
         },
 		handelLoadDataAlur: async function(){
-			this.data    = (await this.$axios.$get(`publik/alur`)).data
+			// this.data    = (await this.$axios.$get(`publik/alur`)).data
+            this.data       = [
+                                {
+                                    balasan: "[\"Selamat datang di virtual assistant BPK Penabur\",\"Apa yang bisa kami bantu?\"]",
+                                    dibuat: "2021-09-30 13:41:09",
+                                    fallback: "",
+                                    id: "1",
+                                    id_akun: null,
+                                    katakunci: "halo, hai, mau tanya",
+                                    mode: "opsi",
+                                    nama: "Default",
+                                    opsi: "[\"jadwal\",\"pengumuman\",\"belajar\"]",
+                                    parentId: "",
+                                },
+                                {
+                                    balasan: "[\"Selamat datang di virtual assistant BPK Penabur\",\"Apa yang bisa kami bantu?\"]",
+                                    dibuat: "2021-09-30 13:41:09",
+                                    fallback: "",
+                                    id: "2",
+                                    id_akun: null,
+                                    katakunci: "halo, hai, mau tanya",
+                                    mode: "opsi",
+                                    nama: "Default",
+                                    opsi: "[\"jadwal\",\"pengumuman\",\"belajar\"]",
+                                    parentId: "1",
+                                },
+                                {
+                                    balasan: "[\"Selamat datang di virtual assistant BPK Penabur\",\"Apa yang bisa kami bantu?\"]",
+                                    dibuat: "2021-09-30 13:41:09",
+                                    fallback: "",
+                                    id: "3",
+                                    id_akun: null,
+                                    katakunci: "halo, hai, mau tanya",
+                                    mode: "opsi",
+                                    nama: "Fallback",
+                                    opsi: "[\"jadwal\",\"pengumuman\",\"belajar\"]",
+                                    parentId: "1",
+                                }
+                            ]
 		},
 		handelKlik: function(id,parentid=''){
 			if(id=="tambah"){
@@ -503,12 +533,12 @@ export default {
                 balasan.mode	= resp.data.mode
                 balasan.opsi	= JSON.parse(resp.data.opsi)
 
-                balasan.data.map((item)=>{
+                balasan.data.map((item, index)=>{
                     this.handelKirimPesanDelay(durasi, {
                         saya: false,
                         pesan: item,
                         mode: balasan.mode,
-                        opsi: balasan.opsi
+                        opsi: balasan.data.length-1===index?balasan.opsi:[]
                     })
                     durasi	+=1000
                 })

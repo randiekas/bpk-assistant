@@ -71,10 +71,11 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: false,
+      dark: true,
       themes: {
         dark: {
-          primary: colors.blue.darken2,
+        //   primary: colors.blue.darken2,
+          primary: '#4268F6',
           accent: colors.grey.darken3,
           secondary: colors.amber.darken3,
           info: colors.teal.lighten1,
@@ -94,7 +95,6 @@ export default {
   },
 
   env: {
-		// apiUrl: process.env.apiUrl || 'http://127.0.0.1:8000',
-		apiUrl: process.env.API_URL || 'http://localhost:8000',
+        API_URL: process.env.API_URL,
 	}
 }

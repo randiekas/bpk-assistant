@@ -16,7 +16,7 @@
 		</v-col>
 	</v-row>
 
-	
+
 	<v-btn
 		v-model="fab"
 		fab
@@ -42,6 +42,13 @@
 		<div>
 			<v-toolbar>
 				<v-toolbar-title>superbot - Bu Ani</v-toolbar-title>
+                <v-spacer/>
+                <v-btn
+                    @click="fab=false"
+                    icon
+                    dark>
+                    <v-icon>mdi-close-circle</v-icon>
+                </v-btn>
 			</v-toolbar>
 		</div>
 		<v-card-text class="card-chat-percakapan flex-grow-1">
@@ -49,16 +56,16 @@
 				v-for="(item, index) in percakapan"
 				:key="index"
 				:class="`mt-1 ${item.saya?'ml-8 justify-end':'mr-8'}`">
-				<v-card 
-					dark 
-					:color="item.saya?'primary':'grey darken-3'" 
+				<v-card
+					dark
+					:color="item.saya?'primary':'grey darken-3'"
 					class="pa-2">
 					<div style="white-space: pre-line" v-html="item.pesan"></div>
-				</v-card>	
+				</v-card>
 			</v-list-item>
-			
+
 		</v-card-text>
-		
+
 		<div>
 			<v-text-field
 				v-if="percakapan.length===0 || percakapan[percakapan.length-1].mode==='teks'"
@@ -73,7 +80,7 @@
 			<div v-else>
 				<v-card elevation="5" dark color="primary">
 					<v-list-item-group>
-					<v-list-item 
+					<v-list-item
 						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
 						:key="index"
 						dense
@@ -91,13 +98,13 @@
 		</div>
 	</v-card>
 	</v-dialog>
-	
-	
+
+
 
 	<v-dialog
 		v-model="dialog"
 		max-width="80vw">
-		<iframe 
+		<iframe
 			:src="dialogUrl"
 			style="width:100%; height:80vh; border:none"/>
     </v-dialog>
@@ -125,7 +132,7 @@ export default {
 			dialogUrl: '',
 			fab: true,
 			percakapan: [
-				
+
 			],
 			pesan:'',
 			pelajaran:  [
@@ -184,7 +191,7 @@ export default {
 	},
 	methods: {
 		handelBukaMateri: function(url){
-			
+
 			this.dialogUrl	= url
 			this.dialog	 	= true
 		},
@@ -195,7 +202,7 @@ export default {
 				mode: 'teks',
 				opsi: [],
 			})
-			
+
 			this.handelResponBot(this.pesan)
 			this.pesan	= ""
 		},
@@ -227,7 +234,7 @@ export default {
                 })
             })
 
-			
+
 		},
 	},
 	mounted: function(){

@@ -12,19 +12,10 @@
                 <v-toolbar-title>
                     Chatbot builder
                 </v-toolbar-title>
-                <v-btn
-                    small
-                    class="ml-4"
-                    rounded>
-                    <v-icon left>
-                        mdi-account
-                    </v-icon>
-                    randiekas@gmail.com
-                </v-btn>
-                <v-spacer />
+                <!-- <v-spacer />
                 <v-btn color="primary" rounded>
                     Simpan
-                </v-btn>
+                </v-btn> -->
             </v-app-bar>
 
         </v-col>
@@ -53,6 +44,22 @@
 					:color="item.saya?'primary':'grey darken-3'"
 					class="pa-2">
 					<div style="white-space: pre-line" v-html="item.pesan"></div>
+                    <v-card dark :color="item.saya?'grey darken-3':'primary'" v-if="item.opsi.length>0" flat outlined>
+                        <v-list-item-group>
+                        <v-list-item
+                            v-for="(row, key) in item.opsi"
+                            :key="key"
+                            dense
+                            @click="pesan=row; handelKirimPesan(); mode='teks'">
+                            <v-list-item-title>{{ row }}</v-list-item-title>
+                            <v-list-item-action>
+                                <v-icon>
+                                    mdi-chevron-right
+                                </v-icon>
+                            </v-list-item-action>
+                        </v-list-item>
+                    </v-list-item-group>
+                    </v-card>
 				</v-card>
 			</v-list-item>
 
@@ -60,7 +67,6 @@
 
 		<div>
 			<v-text-field
-				v-if="percakapan.length===0 || percakapan[percakapan.length-1].mode==='teks'"
 				outlined
 				hide-details=""
 				placeholder="tulis pesan disini ..."
@@ -68,25 +74,6 @@
 				append-icon="mdi-send"
 				v-model="pesan"
 				v-on:keyup.enter="handelKirimPesan"/>
-
-			<div v-else>
-				<v-card elevation="5" dark color="primary">
-					<v-list-item-group>
-					<v-list-item
-						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
-						:key="index"
-						dense
-						@click="pesan=item; handelKirimPesan(); mode='teks'">
-						<v-list-item-title>{{ item }}</v-list-item-title>
-						<v-list-item-action>
-							<v-icon>
-								mdi-chevron-right
-							</v-icon>
-						</v-list-item-action>
-					</v-list-item>
-				</v-list-item-group>
-				</v-card>
-			</div>
 		</div>
 	</v-card>
         </v-col>
@@ -214,13 +201,13 @@
 
 
 			<v-subheader>
-				Response
+				Respon Bot
 			</v-subheader>
             <v-container>
                 <v-simple-table dense>
                     <thead>
                         <tr>
-                            <th style="width:90%">Response</th>
+                            <th style="width:90%"></th>
                             <th style="width:10%"></th>
                         </tr>
                     </thead>
@@ -334,6 +321,7 @@
 </template>
 <script>
 export default {
+    layout: 'beranda',
 	asyncData: function(){
 
 		return {
@@ -378,10 +366,11 @@ export default {
             }
         },
 		percakapan: function(){
-			setInterval(()=>{
-				const chatarea	= document.querySelector(".card-chat-percakapan")
-				chatarea.scrollTo(0, chatarea.scrollHeight+10000)
-			}, 500)
+			// setInterval(()=>{
+			// 	const chatarea	= document.querySelector(".card-chat-percakapan")
+            //     console.log("panggil")
+			// 	chatarea.scrollTo(0, chatarea.scrollHeight+10000)
+			// }, 500)
 		},
 	},
 	mounted: function(){
@@ -503,12 +492,12 @@ export default {
                 balasan.mode	= resp.data.mode
                 balasan.opsi	= JSON.parse(resp.data.opsi)
 
-                balasan.data.map((item)=>{
+                balasan.data.map((item, index)=>{
                     this.handelKirimPesanDelay(durasi, {
                         saya: false,
                         pesan: item,
                         mode: balasan.mode,
-                        opsi: balasan.opsi
+                        opsi: balasan.data.length-1===index?balasan.opsi:[]
                     })
                     durasi	+=1000
                 })

@@ -63,7 +63,7 @@ export default {
         handelMasuk: function(){
             this.setFetching(true)
             this.$axios.$post(`publik/akun/masuk`, this.form).then((resp)=>{
-                this.setFetching(false)
+                
                 if(resp.status){
                     localStorage.setItem("email", resp.data.email)
                     localStorage.setItem("tipe", resp.data.tipe)
@@ -74,6 +74,7 @@ export default {
                         window.location.href="/beranda"
                     }
                 }else{
+                    this.setFetching(false)
                     this.alertMessage   = resp.message
                     this.alert          = true
                 }

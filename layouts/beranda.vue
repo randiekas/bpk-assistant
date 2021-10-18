@@ -72,10 +72,10 @@
 <script>
 export default {
     data () {
-        return {
-            fixed: false,
-            isFetching: false,
-            items: [
+        let items   = []
+        const tipe  = localStorage.getItem("tipe")
+        if(tipe==="superadmin"){
+            items   = [
                 {
                     "ikon": "mdi-account-multiple",
                     "nama":"Akun",
@@ -94,7 +94,27 @@ export default {
                     "deskripsi":"Lihat Laporan Riwayat Chat",
                     "link":""
                 },
-            ],
+            ]
+        }else{
+            items   = [
+                {
+                    "ikon": "mdi-forum",
+                    "nama":"Builder",
+                    "deskripsi":"Kelola Chat Builder",
+                    "link":"/beranda"
+                },
+                {
+                    "ikon": "mdi-chat-processing",
+                    "nama":"Riwayat",
+                    "deskripsi":"Lihat Laporan Riwayat Chat",
+                    "link":""
+                },
+            ]
+        }
+        return {
+            fixed: false,
+            isFetching: false,
+            items: items,
         }
     },
     methods:{

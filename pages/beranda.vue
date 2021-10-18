@@ -116,17 +116,7 @@
                     Simpan
                 </v-btn>
             </v-app-bar>
-            <v-container v-if="depth==1">
-                <v-subheader>
-                    Akun pengelola alur ini
-                </v-subheader>
-                <v-select
-                    v-model="id_akun"
-                    dense
-                    :items="akun"
-                    item-text="email"
-                    item-value="id"/>
-            </v-container>
+            
             <v-container>
                 <v-subheader>
                     Ketika user menulis
@@ -445,7 +435,7 @@ export default {
 
 			],
 			pesan:'',
-            id_akun:'',
+            
             parentid:0,
             depth:0,
             perintah:[],
@@ -467,7 +457,7 @@ export default {
                 this.inputPerintah  = ''
                 this.inputResponse  = ''
                 this.inputOpsi      = []
-                this.id_akun        = ''
+                
             }
         },
 		percakapan: function(){
@@ -479,7 +469,6 @@ export default {
 		},
 	},
 	mounted: function(){
-        this.handelLoadDataAkun()
 		this.handelLoadDataAlur()
 	},
 	methods: {
@@ -487,7 +476,6 @@ export default {
             // this.isFetching = true
             const payload   = {
                 id: this.id,
-                id_akun: this.id_akun,
                 parentid: this.parentid,
                 depth: this.depth,
                 nama: this.nama,
@@ -498,7 +486,7 @@ export default {
                 opsi: JSON.stringify(this.opsi)
             }
             // this.data.push(payload)
-            this.$api.$post(`superadmin/alur/simpan`, payload).then((resp)=>{
+            this.$api.$post(`biasa/alur/simpan`, payload).then((resp)=>{
                 this.handelLoadDataAlur()
                 this.dialog         = false
                 this.isFetching     = false
@@ -510,7 +498,7 @@ export default {
         },
         handelHapus: function(){
             this.isFetching = true
-            this.$api.$get(`superadmin/alur/hapus/${this.id}`).then((resp)=>{
+            this.$api.$get(`biasa/alur/hapus/${this.id}`).then((resp)=>{
                 this.handelLoadDataAlur()
                 this.dialog         = false
                 this.isFetching     = false
@@ -542,15 +530,29 @@ export default {
             this.opsi.splice(index,1)
         },
 		handelLoadDataAlur: async function(){
-			this.data    = (await this.$api.$get(`superadmin/alur`)).data
+			let data    		= [{
+                                    balasan: "[\"Selamat datang di virtual assistant BPK Penabur\",\"Apa yang bisa kami bantu?\"]",
+                                    dibuat: "2021-09-30 13:41:09",
+                                    fallback: "",
+                                    id: "1",
+                                    katakunci: "halo, hai, mau tanya",
+                                    mode: "opsi",
+                                    nama: "Default",
+                                    opsi: "[]",
+                                    parentId: "",
+                                }]
+			let data_api		= (await this.$api.$get(`biasa/alur`)).data
+			this.data			= data.concat(data_api)
+			
 		},
-        handelLoadDataAkun: async function(){
-			this.akun    = (await this.$api.$get(`superadmin/akun`)).data
-		},
+        
 		handelKlik: function(action, depth, id){
+			if(depth==0){
+				alert("Kamu tidak mempunyai akses untuk mengubah alur ini")
+				return 
+			}
 			if(action=="tambah"){
                 this.id         = ''
-                this.id_akun    = id
                 this.nama       = ''
                 this.parentid   = id
                 this.depth      = depth+1
@@ -561,7 +563,6 @@ export default {
             }else{
                 const data      = this.data.filter((item)=>item.id==id)[0]
                 this.id         = id
-                this.id_akun    = data.id_akun
                 this.parentid   = data.parentid
                 this.depth      = data.depth
                 this.nama       = data.nama

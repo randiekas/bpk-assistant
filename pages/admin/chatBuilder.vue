@@ -79,6 +79,7 @@
 				v-model="pesan"
 				v-on:keyup.enter="handelKirimPesan"/>
 		</div>
+
 	</v-card>
         </v-col>
 
@@ -142,7 +143,8 @@
                     class="mb-1"
                     append-icon="mdi-delete"
                     @click:append="handelHapusPerintah(index)"/>
-                <v-text-field
+                <v-btn @click="handelTambahPerintah" block class="mt-2">Tambah Perintah</v-btn>
+                <!-- <v-text-field
                     dense
                     placeholder="Tulis perintah disini ..."
                     outlined
@@ -151,7 +153,7 @@
                     v-model="inputPerintah"
                     @click:append="handelTambahPerintah"
                     v-on:keyup.enter="handelTambahPerintah"
-                    class="mb-1"/>
+                    class="mb-1"/> -->
             </v-container>
 
             <!-- <v-subheader>
@@ -230,7 +232,8 @@
                     auto-grow
                     append-icon="mdi-delete"
                     @click:append="handelHapusResponse(index)"/>
-                <v-textarea
+                <v-btn @click="handelTambahResponse" block class="mt-2">Tambah Respon</v-btn>
+                <!-- <v-textarea
                     outlined
                     dense
                     hide-details=""
@@ -239,153 +242,104 @@
                     auto-grow
                     rows="1"
                     v-model="inputResponse"
-                    @click:append="handelTambahResponse"
-                    v-on:keyup.enter="handelTambahResponse"/>
+                    @click:append="handelTambahResponse"/> -->
                     
             </v-container>
 
             <v-subheader class="pb-0">
-				Mode Keyboard balasan user
+				Opsi pada respon
 			</v-subheader>
+            
             <v-container>
-                <v-radio-group v-model="mode" row class="mt-0 pt-0">
-                    <v-radio
-                        label="Teks"
-                        value="teks"/>
-                    <v-radio
-                        label="Opsi"
-                        value="opsi"/>
-                </v-radio-group>
-                <div
-                    v-if="mode==='opsi'">
-                    <v-simple-table dense>
-                        <tbody>
-                            <tr>
-                                <th width="50%">Label</th>
-                                <th width="30%">Aksi</th>
-                                <th width="20%">Tujuan</th>
-                                <th width="20px"></th>
-                            </tr>
+                <v-simple-table dense>
+                    <tbody>
+                        <tr>
+                            <th width="50%">Label</th>
+                            <th width="30%">Aksi</th>
+                            <th width="20%">Tujuan</th>
+                            <th width="20px"></th>
+                        </tr>
 
-                            <tr 
-                                v-for="(item, index) in opsi"
-                                :key="index">
-                                <td>
-                                    <v-text-field
-                                        dense
-                                        placeholder="Opsi"
-                                        v-model="opsi[index].label"
-                                        outlined
-                                        hide-details=""
-                                        class="mb-1"/>                
-                                </td>
-                                <td>
-                                    <v-radio-group
-                                        v-model="opsi[index].aksi"
-                                        row
-                                        hide-details=""
-                                        dense
-                                        class="mt-0 pt-0">
-                                        <v-radio
-                                            label="link"
-                                            value="link"/>
-                                        <v-radio
-                                            label="Flowchat"
-                                            value="flowchat"/>
+                        <tr 
+                            v-for="(item, index) in opsi"
+                            :key="index">
+                            <td>
+                                <v-text-field
+                                    dense
+                                    placeholder="Opsi"
+                                    v-model="opsi[index].label"
+                                    outlined
+                                    hide-details=""
+                                    class="mb-1"/>                
+                            </td>
+                            <td>
+                                <v-radio-group
+                                    v-model="opsi[index].aksi"
+                                    row
+                                    hide-details=""
+                                    dense
+                                    class="mt-0 pt-0">
+                                    <v-radio
+                                        label="link"
+                                        value="link"/>
+                                    <v-radio
+                                        label="Flowchat"
+                                        value="flowchat"/>
 
-                                    </v-radio-group>
-                                </td>
-                                <td>
-                                    <v-text-field
-                                        v-if="opsi[index].aksi==='link'"
-                                        dense
-                                        placeholder="Puit Link url here ..."
-                                        v-model="opsi[index].tujuan"
-                                        outlined
-                                        hide-details=""
-                                        class="mb-1"/>                
-                                        
-                                    <v-select
-                                        v-else
-                                        v-model="opsi[index].tujuan"
-                                        dense
-                                        :items="data"
-                                        item-text="nama"
-                                        item-value="id"/>
-                                </td>
-                                <td
-                                    style="width:30px">
-                                    <v-btn
-                                        icon
-                                        @click="handelHapusOpsi(index)">
-                                        <v-icon>
-                                            mdi-delete
-                                        </v-icon>
-                                    </v-btn>
-                                </td>
-                            </tr>
+                                </v-radio-group>
+                            </td>
+                            <td>
+                                <v-text-field
+                                    v-if="opsi[index].aksi==='link'"
+                                    dense
+                                    placeholder="Puit Link url here ..."
+                                    v-model="opsi[index].tujuan"
+                                    outlined
+                                    hide-details=""
+                                    class="mb-1"/>                
+                                    
+                                <v-select
+                                    v-else
+                                    v-model="opsi[index].tujuan"
+                                    dense
+                                    :items="data"
+                                    item-text="nama"
+                                    item-value="id"/>
+                            </td>
+                            <td
+                                style="width:30px">
+                                <v-btn
+                                    icon
+                                    @click="handelHapusOpsi(index)">
+                                    <v-icon>
+                                        mdi-delete
+                                    </v-icon>
+                                </v-btn>
+                            </td>
+                        </tr>
 
-                            <tr >
-                                <td>
-                                    <v-text-field
-                                        dense
-                                        placeholder="Opsi"
-                                        v-model="inputOpsi.label"
-                                        outlined
-                                        hide-details=""
-                                        class="mb-1"/>                
-                                </td>
-                                <td>
-                                    <v-radio-group
-                                        v-model="inputOpsi.aksi"
-                                        row
-                                        hide-details=""
-                                        dense
-                                        class="mt-0 pt-0">
-                                        <v-radio
-                                            label="link"
-                                            value="link"/>
-                                        <v-radio
-                                            label="Chat Flow"
-                                            value="chat"/>
-
-                                    </v-radio-group>
-                                </td>
-                                <td>
-                                    <v-text-field
-                                        v-if="inputOpsi.aksi==='link'"
-                                        dense
-                                        placeholder="Puit Link url here ..."
-                                        v-model="inputOpsi.tujuan"
-                                        outlined
-                                        hide-details=""
-                                        class="mb-1"/>                
-                                    <v-select
-                                        v-else
-                                        v-model="inputOpsi.tujuan"
-                                        dense
-                                        :items="data"
-                                        item-text="nama"
-                                        item-value="id"/>
-                                </td>
-                                <td
-                                    style="width:30px">
-                                    <v-btn
-                                        icon
-                                        @click="handelTambahOpsi">
-                                        <v-icon>
-                                            mdi-plus
-                                        </v-icon>
-                                    </v-btn>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </v-simple-table>
-                    
-                </div>
-
+                        
+                    </tbody>
+                </v-simple-table>
+                <v-btn @click="handelTambahOpsi" block class="mt-2">Tambah Opsi</v-btn>
             </v-container>
-			</v-card>
+			
+            <template v-if="depth==0">
+            <v-subheader class="pb-0">
+                Default fallback
+            </v-subheader>
+            <v-container>
+                <v-textarea
+                    outlined
+                    dense
+                    hide-details=""
+                    :placeholder="`Ketik respon fallback disini`"
+                    auto-grow
+                    rows="1"
+                    v-model="inputFallback"/>
+            </v-container>
+            </template>
+            </v-card>
 		</v-dialog>
         <v-dialog
 			v-model="isFetching"
@@ -418,6 +372,20 @@
                     <v-btn class="mt-4" block v-on:click="alertMessage.status=false">Tutup</v-btn>
             </v-alert>
         </v-dialog>
+        <v-dialog
+            v-model="dialogMateri"
+            max-width="80vw">
+            <iframe
+                v-if="dialogMateri && dialogUrl"
+                :src="dialogUrl"
+                style="width:100%; height:80vh; border:none"/>
+            <v-alert
+                v-else
+                type="info"
+                class="error mb-0">
+                Flow ini belum di setting
+            </v-alert>
+        </v-dialog>
     </v-row>
 </template>
 <script>
@@ -433,6 +401,8 @@ export default {
 	},
 	data: function(){
 		return {
+            dialogMateri:  false,
+            dialogUrl:  '',
             alertMessage: {
                 status: false,
                 message: ''
@@ -452,10 +422,11 @@ export default {
             response:[],
             mode:'teks',
             opsi:[],
-            nama: '',
+            nama: '',            
 			inputPerintah: '',
 			inputResponse: '',
 			inputOpsi: {},
+			inputFallback: "",
 		}
 	},
 	watch:{
@@ -467,6 +438,7 @@ export default {
                 this.inputPerintah  = ''
                 this.inputResponse  = ''
                 this.inputOpsi      = []
+                this.inputFallback  = ''
                 this.id_akun        = ''
             }
         },
@@ -493,7 +465,7 @@ export default {
                 nama: this.nama,
                 katakunci: this.perintah.join(),
                 balasan: JSON.stringify(this.response),
-                fallback: '',
+                fallback: this.inputFallback,
                 mode: this.mode,
                 opsi: JSON.stringify(this.opsi)
             }
@@ -535,7 +507,7 @@ export default {
             this.response.splice(index,1)
         },
         handelTambahOpsi: function(){
-            this.opsi.push(this.inputOpsi)
+            this.opsi.push(Object.assign({}, this.inputOpsi))
             this.inputOpsi      = {}
         },
         handelHapusOpsi: function(index){
@@ -557,7 +529,8 @@ export default {
                 this.perintah   = []
                 this.response   = []
                 this.mode       = 'teks'
-                this.opsi       = []
+                this.mode       = 'teks'
+                this.inputFallback       = ""
             }else{
                 const data      = this.data.filter((item)=>item.id==id)[0]
                 this.id         = id
@@ -569,6 +542,7 @@ export default {
                 this.response   = JSON.parse(data.balasan)
                 this.mode       = data.mode
                 this.opsi       = JSON.parse(data.opsi)
+                this.inputFallback       = data.fallback
             }
 			this.dialog	 	= true
 
@@ -582,7 +556,14 @@ export default {
 		},
 		handelKirimPesan: function(){
             let pesan   = this.pesan;
-            if(pesan.label){
+            if(pesan.aksi){
+                if(pesan.aksi==='link'){
+                    this.dialogMateri   = true
+                    this.dialogUrl      = pesan.tujuan
+                    this.pesan			= ""
+                    // after popup end the flow
+                    return
+                }
                 pesan   = this.pesan.label
             }
 			this.percakapan.push({

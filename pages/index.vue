@@ -41,7 +41,7 @@
 		<v-card class="card-chat d-flex flex-column justify-content-between">
 		<div>
 			<v-toolbar>
-				<v-toolbar-title>superbot - Bu Ani</v-toolbar-title>
+				<v-toolbar-title>Superbot - SMAK 1</v-toolbar-title>
                 <v-spacer/>
                 <v-btn
                     @click="fab=false"
@@ -61,6 +61,26 @@
 					:color="item.saya?'primary':'grey darken-3'"
 					class="pa-2">
 					<div style="white-space: pre-line" v-html="item.pesan"></div>
+                    <v-card dark :color="item.saya?'grey darken-3':'primary'" v-if="item.opsi.length>0" flat outlined>
+                        <v-list-item-group>
+                            <template
+                                v-for="(row, key) in item.opsi">
+                                <v-divider :key="`divider-${key}`" v-show="index !== 0"></v-divider>
+                                <v-list-item
+                                    :key="key"
+                                    class="py-0 my-0"
+                                    dense
+                                    @click="pesan=row; handelKirimPesan(); mode='teks'">
+                                    <v-list-item-title>{{ row.label }}</v-list-item-title>
+                                    <v-list-item-action class="py-0 my-0">
+                                        <v-icon x>
+                                            mdi-chevron-right
+                                        </v-icon>
+                                    </v-list-item-action>
+                                </v-list-item>
+                            </template>
+                    </v-list-item-group>
+                    </v-card>
 				</v-card>
 			</v-list-item>
 
@@ -68,7 +88,6 @@
 
 		<div>
 			<v-text-field
-				v-if="percakapan.length===0 || percakapan[percakapan.length-1].mode==='teks'"
 				outlined
 				hide-details=""
 				placeholder="tulis pesan disini ..."
@@ -76,25 +95,6 @@
 				append-icon="mdi-send"
 				v-model="pesan"
 				v-on:keyup.enter="handelKirimPesan"/>
-
-			<div v-else>
-				<v-card elevation="5" dark color="primary">
-					<v-list-item-group>
-					<v-list-item
-						v-for="(item, index) in percakapan[percakapan.length-1].opsi"
-						:key="index"
-						dense
-						v-on:click="pesan=item; handelKirimPesan(); mode='teks'">
-						<v-list-item-title>{{ item }}</v-list-item-title>
-						<v-list-item-action>
-							<v-icon>
-								mdi-chevron-right
-							</v-icon>
-						</v-list-item-action>
-					</v-list-item>
-				</v-list-item-group>
-				</v-card>
-			</div>
 		</div>
 	</v-card>
 	</v-dialog>
@@ -102,11 +102,18 @@
 
 
 	<v-dialog
-		v-model="dialog"
+		v-model="dialogMateri"
 		max-width="80vw">
 		<iframe
-			:src="dialogUrl"
-			style="width:100%; height:80vh; border:none"/>
+                v-if="dialogMateri && dialogUrl"
+                :src="dialogUrl"
+                style="width:100%; height:80vh; border:none"/>
+            <v-alert
+				v-else
+                type="info"
+                class="error mb-0">
+                Flow ini belum di setting
+			</v-alert>
     </v-dialog>
 
 
@@ -128,8 +135,8 @@ export default {
 	},
 	data: function(){
 		return {
-			dialog: false,
-			dialogUrl: '',
+			dialogMateri:  false,
+            dialogUrl:  '',
 			fab: true,
 			percakapan: [
 
@@ -171,10 +178,10 @@ export default {
 	},
 	watch:{
 		percakapan: function(){
-			setInterval(()=>{
-				const chatarea	= document.querySelector(".card-chat-percakapan")
-				chatarea.scrollTo(0, chatarea.scrollHeight+10000)
-			}, 500)
+			// setInterval(()=>{
+			// 	const chatarea	= document.querySelector(".card-chat-percakapan")
+			// 	chatarea.scrollTo(0, chatarea.scrollHeight+10000)
+			// }, 500)
 		},
 		userNama: function(){
 			localStorage.setItem('userNama', this.userNama)
@@ -196,9 +203,20 @@ export default {
 			this.dialog	 	= true
 		},
 		handelKirimPesan: function(){
+            let pesan   = this.pesan;
+            if(pesan.aksi){
+                if(pesan.aksi==='link'){
+                    this.dialogMateri   = true
+                    this.dialogUrl      = pesan.tujuan
+					this.pesan			= ""
+                    // after popup end the flow
+                    return
+                }
+                pesan   = this.pesan.label
+            }
 			this.percakapan.push({
 				saya: true,
-				pesan: this.pesan,
+				pesan: pesan,
 				mode: 'teks',
 				opsi: [],
 			})
@@ -234,6 +252,40 @@ export default {
                 })
             })
 
+
+		},
+		handelResponBot: function(pesan){
+			let durasi	= 0;
+            let balasan	= { data: [], mode: "teks", opsi:[]}
+            let payload = {}
+            if(pesan.label){
+                payload             = pesan
+            }else{
+                payload.katakunci   = pesan
+            }
+
+            this.$axios.$post(`publik/alur`, payload).then((resp)=>{
+                balasan.data	= JSON.parse(resp.data.balasan)
+                balasan.mode	= resp.data.mode
+                balasan.opsi	= JSON.parse(resp.data.opsi)
+
+                balasan.data.map((item, index)=>{
+                    // this.handelKirimPesanDelay(durasi, {
+                    //     saya: false,
+                    //     pesan: item,
+                    //     mode: balasan.mode,
+                    //     opsi: balasan.data.length-1===index?balasan.opsi:[]
+                    // })
+                    // durasi	+=1000
+                    
+                    this.percakapan.push({
+                        saya: false,
+                        pesan: item,
+                        mode: balasan.mode,
+                        opsi: balasan.data.length-1===index?balasan.opsi:[]
+                    })
+                })
+            })
 
 		},
 	},

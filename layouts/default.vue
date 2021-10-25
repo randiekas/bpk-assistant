@@ -22,7 +22,8 @@
 	<v-app-bar
 		:clipped-left="clipped"
 		fixed
-		app>
+		app
+		light>
 		<v-toolbar-title>
             <nuxt-link to="/">
 

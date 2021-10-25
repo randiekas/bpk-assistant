@@ -1,17 +1,17 @@
 <template>
-<div>
+<div class="white">
 	<v-row>
-		<v-col md="5">
+		<v-col md="4">
 			<v-container style="height:80vh" class="d-flex">
 				<div class="mx-auto my-auto">
-				<h1 class="display-3">Virtual Assistant BPK Penabur</h1>
-				<p class="text-body-1">
+				<h1 class="display-3 black--text">Virtual Assistant BPK Penabur</h1>
+				<p class="text-body-1 black--text">
 					Selamat datang di situs resmi belajar,  berbasis personal assistant artificial intellegence.
 				</p>
 				</div>
 			</v-container>
 		</v-col>
-		<v-col md="7">
+		<v-col md="8">
 			<v-img src="/cover-homepage.png"/>
 		</v-col>
 	</v-row>
@@ -38,10 +38,10 @@
 		v-model="fab"
 		persistent
 		max-width="480">
-		<v-card class="card-chat d-flex flex-column justify-content-between">
+		<v-card class="card-chat d-flex flex-column justify-content-between" light>
 		<div>
-			<v-toolbar>
-				<v-toolbar-title>Superbot - SMAK 1</v-toolbar-title>
+			<v-toolbar class="secondary">
+				<v-toolbar-title class="white--text">Superbot - SMAK 1</v-toolbar-title>
                 <v-spacer/>
                 <v-btn
                     @click="fab=false"
@@ -51,17 +51,17 @@
                 </v-btn>
 			</v-toolbar>
 		</div>
-		<v-card-text class="card-chat-percakapan flex-grow-1">
+		<v-card-text class="card-chat-percakapan flex-grow-1 white">
 			<v-list-item dense
 				v-for="(item, index) in percakapan"
 				:key="index"
 				:class="`mt-1 ${item.saya?'ml-8 justify-end':'mr-8'}`">
 				<v-card
 					dark
-					:color="item.saya?'primary':'grey darken-3'"
+					:color="item.saya?'primary':'grey lighten-3'"
 					class="pa-2">
-					<div style="white-space: pre-line" v-html="item.pesan"></div>
-                    <v-card dark :color="item.saya?'grey darken-3':'primary'" v-if="item.opsi.length>0" flat outlined>
+					<div style="white-space: pre-line" :class="`${item.saya?'white':'black'}--text`" v-html="item.pesan"></div>
+                    <v-card class="mt-2" dark :color="item.saya?'grey darken-3':'primary'" v-if="item.opsi.length>0" flat outlined>
                         <v-list-item-group>
                             <template
                                 v-for="(row, key) in item.opsi">

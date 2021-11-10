@@ -21,8 +21,8 @@
                 <p class="mt-4">Kelola Superbot Anda</p>
                 <v-text-field
                     v-model="form.email"
-                    label="Email Address"
-                    placeholder="Enter your email"
+                    label="Username"
+                    placeholder="Enter username"
                     outlined
                     dense
                     />

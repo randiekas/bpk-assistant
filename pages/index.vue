@@ -1,5 +1,15 @@
 <template>
 <div class="white">
+	<v-dialog
+		v-model="alert"
+		width="300">
+		<v-alert
+			dense
+			type="error"
+			class="mb-0">
+			{{ alertMessage }}
+		</v-alert>
+	</v-dialog>
 	<v-row>
 		<v-col md="4">
 			<v-container style="height:80vh" class="d-flex">
@@ -52,7 +62,39 @@
 			</v-toolbar>
 		</div>
 		<v-card-text class="card-chat-percakapan flex-grow-1 white">
-			<v-list-item dense
+			<div 
+				v-if="user==false"
+				class="mt-4">
+				<v-alert
+					type="error">
+					Anda harus login terlebih dahulu untuk melakukan percakapan dengan bot
+				</v-alert>
+				<v-text-field
+                    v-model="form.email"
+                    label="Username"
+                    placeholder="Enter username"
+                    outlined
+                    dense
+                    />
+                <v-text-field
+                    v-model="form.password"
+                    type="password"
+                    label="Password"
+                    placeholder="Enter your password"
+                    outlined
+                    dense
+                    v-on:keyup.enter="handelMasuk()"
+                    />
+                <v-btn
+                    class="primary"
+                    block
+                    @click="handelMasuk()">
+                    Sign in
+                </v-btn>
+			</div>
+			<v-list-item 
+				v-else
+				dense
 				v-for="(item, index) in percakapan"
 				:key="index"
 				:class="`mt-1 ${item.saya?'ml-8 justify-end':'mr-8'}`">
@@ -88,6 +130,7 @@
 
 		<div>
 			<v-text-field
+				v-if="user"
 				outlined
 				hide-details=""
 				placeholder="tulis pesan disini ..."
@@ -121,17 +164,16 @@
 </template>
 <script>
 export default {
+	props: ['setFetching'],
 	asyncData: function(){
-		// list step
-		// step 1 = identifikasi nama
-		// step 2 = identifikasi kelas
-		// step 3 = sudah diidentifikasi
 		return {
-			step: localStorage.getItem('step')||1,
-			userNama: localStorage.getItem('userNama')||'',
-			userKelas: localStorage.getItem('userKelas')||'',
-			userPelajaran: localStorage.getItem('userPelajaran')||'',
+			
 		}
+	},
+	mounted: function(){
+		this.pesan	= "halo"
+		this.handelKirimPesan()
+		this.handelCekLogin()
 	},
 	data: function(){
 		return {
@@ -142,38 +184,13 @@ export default {
 
 			],
 			pesan:'',
-			pelajaran:  [
-					{
-						value: 'belajar indonesia',
-						label: 'Bahasa Indonesia'
-					},
-					{
-						value: 'belajar inggris',
-						label: 'Bahasa Inggris'
-					}
-				],
-			materi: {
-				"belajar indonesia":[
-					`<a onclick="handelBukaMateri('https://scola.s3.ap-southeast-1.amazonaws.com/bank_materi/1_a558b8a362f51019f9775d00292dee972c93677e3d9447c3e59b8a0ab2a3497120210119041705.pdf')">- Novel</a>`
-				],
-				"belajar inggris":[
-					`<a onclick="handelBukaMateri('https://scola.s3.ap-southeast-1.amazonaws.com/bank_materi/64b63e922fadd8fd0a251f08f2d7ba9cde38bd9793f17147472aa376a1603ad420190730120145.pdf')">- Adjective</a>`
-				]
-			},
-			tingkat:  [
-					{
-						value: 10,
-						label: '10 - Sepuluh'
-					},
-					{
-						value: 11,
-						label: '11 - Sebelas'
-					},
-					{
-						value: 12,
-						label: '12 - Duabelas'
-					}
-				],
+			form: {
+                email: '',
+                password: '',
+            },
+			user: false,
+			alert: false,
+			alertMessage: '',
 		}
 	},
 	watch:{
@@ -229,33 +246,8 @@ export default {
 				this.percakapan.push(pesan)
 			}, delay)
 		},
+		
 		handelResponBot: function(pesan){
-			let durasi	= 1000;
-            let balasan	= { data: [], mode: "teks", opsi:[]}
-            const payload           = {
-                katakunci: pesan
-            }
-
-            this.$axios.$post(`publik/alur/pesan`, payload).then((resp)=>{
-                balasan.data	= JSON.parse(resp.data.balasan)
-                balasan.mode	= resp.data.mode
-                balasan.opsi	= JSON.parse(resp.data.opsi)
-
-                balasan.data.map((item)=>{
-                    this.handelKirimPesanDelay(durasi, {
-                        saya: false,
-                        pesan: item,
-                        mode: balasan.mode,
-                        opsi: balasan.opsi
-                    })
-                    durasi	+=1000
-                })
-            })
-
-
-		},
-		handelResponBot: function(pesan){
-			let durasi	= 0;
             let balasan	= { data: [], mode: "teks", opsi:[]}
             let payload = {}
             if(pesan.label){
@@ -288,10 +280,36 @@ export default {
             })
 
 		},
-	},
-	mounted: function(){
-		this.pesan	= "halo"
-		this.handelKirimPesan()
+
+		handelMasuk: function(){
+            this.setFetching(true)
+            this.$axios.$post(`publik/akun/masuk`, this.form).then((resp)=>{
+                
+                if(resp.status){
+                    localStorage.setItem("email", resp.data.email)
+                    localStorage.setItem("tipe", resp.data.tipe)
+                    localStorage.setItem("token", resp.data.token)
+                    if(resp.data.tipe==="superadmin"){
+                        window.location.href="/admin/beranda"
+                    }else{
+                        window.location.reload()
+                    }
+                }else{
+                    this.setFetching(false)
+                    this.alertMessage   = resp.message
+                    this.alert          = true
+                }
+				this.setFetching(false)
+            })
+        },
+
+		handelCekLogin: function(){
+			this.$api.$get('publik/akun/status').then((resp)=>{
+				if(resp.status){
+					this.user	= resp.data
+				}
+			})
+		}
 	},
 }
 </script>

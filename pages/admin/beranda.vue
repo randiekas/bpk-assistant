@@ -29,7 +29,7 @@
 							#
 						</th>
 						<th class="text-left" style="width:20%">
-							Email
+							Username
 						</th>
 						<th class="text-left" style="width:25%">
 							Password
@@ -120,8 +120,11 @@
                                     v-model="form.tipe"
                                     mandatory>
                                     <v-radio
-                                        label="Biasa"
-                                        value="biasa"/>
+                                        label="Siswa"
+                                        value="siswa"/>
+									<v-radio
+                                        label="Guru"
+                                        value="guru"/>
                                     <v-radio
                                         label="Super Admin"
                                         value="superadmin"/>
@@ -176,7 +179,7 @@ export default {
             this.form   = {
                 email: '',
                 password: '',
-                tipe: 'biasa',
+                tipe: 'siswa',
                 keterangan: '',
             }
         },

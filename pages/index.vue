@@ -86,10 +86,16 @@
                     v-on:keyup.enter="handelMasuk()"
                     />
                 <v-btn
-                    class="primary"
+                    class="primary mb-2"
                     block
                     @click="handelMasuk()">
                     Sign in
+                </v-btn>
+				<v-btn
+                    block
+					text
+                    @click="user=true">
+                    Lewati
                 </v-btn>
 			</div>
 			<v-list-item 

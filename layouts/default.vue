@@ -54,14 +54,16 @@
 			Facility
 		</v-btn> -->
 		<v-btn
+			v-if="user!=false"
 			class="primary"
 			text
-			to="/masuk">
-			Masuk
+			@click="handelKeluar">
+			Keluar
 		</v-btn>
 	</v-app-bar>
 	<v-main>
 		<nuxt-child
+			:user="user"
             :setFetching="setFetching"/>
 	</v-main>
 
@@ -70,7 +72,7 @@
 
 <script>
 export default {
-	data () {
+	data: function() {
 		return {
 			clipped: false,
 			drawer: false,
@@ -91,13 +93,30 @@ export default {
 			right: true,
 			rightDrawer: false,
 			title: 'Vuetify.js',
-            isFetching: false
+            isFetching: false,
+			user: false,
 		}
+	},
+	mounted: function(){
+		this.handelCekLogin()
 	},
     methods:{
         setFetching: function(status){
             this.isFetching = status
-        }
+        },
+		handelCekLogin: function(){
+			this.$api.$get('publik/akun/status').then((resp)=>{
+				if(resp.status){
+					this.user	= resp.data
+				}
+			})
+		},
+		handelKeluar: async function(){
+			await localStorage.removeItem("email")
+			await localStorage.removeItem("tipe")
+			await localStorage.removeItem("token")
+			window.location.reload()
+		}
 	}
 }
 </script>

@@ -170,7 +170,7 @@
 </template>
 <script>
 export default {
-	props: ['setFetching'],
+	props: ['setFetching', 'user'],
 	asyncData: function(){
 		return {
 			
@@ -179,7 +179,6 @@ export default {
 	mounted: function(){
 		this.pesan	= "halo"
 		this.handelKirimPesan()
-		this.handelCekLogin()
 	},
 	data: function(){
 		return {
@@ -194,7 +193,6 @@ export default {
                 email: '',
                 password: '',
             },
-			user: false,
 			alert: false,
 			alertMessage: '',
 		}
@@ -308,14 +306,6 @@ export default {
 				this.setFetching(false)
             })
         },
-
-		handelCekLogin: function(){
-			this.$api.$get('publik/akun/status').then((resp)=>{
-				if(resp.status){
-					this.user	= resp.data
-				}
-			})
-		}
 	},
 }
 </script>
